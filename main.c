@@ -6,9 +6,9 @@
 #include <stdio.h>
 #include <math.h>
 
-#define ELEMENTOS		200
-#define WIDTH_PLANO		3000
-#define HEIGHT_PLANO 	3000
+#define ELEMENTOS		500
+#define WIDTH_PLANO		1500
+#define HEIGHT_PLANO 	1500
 
 typedef struct 
 {
@@ -26,16 +26,16 @@ void init2D(float r, float g, float b)
 	gluOrtho2D (0.0, WIDTH_PLANO, 0.0, HEIGHT_PLANO);
 }
 
-float Fuerza(Cuerpo a, Cuerpo b){
-	float G = 1;
-	float norma = pow(a.x - b.x, 2) + pow(a.y - b.y, 2);
+float Fuerza(Cuerpo *a, Cuerpo *b){
+	float G = 0.5;
+	float norma = pow(a->x - b->x, 2) + pow(a->y - b->y, 2);
 
-	if (norma < 1){
+	if (norma < 10){
 		return 0.0;
 	}
 
 
-	return  G * a.masa * b.masa / pow(sqrt(norma), 3);
+	return  G * a->masa * b->masa / pow(sqrt(norma), 3);
 }
 
 void gen_cumulo(Cuerpo *cuerpos){
@@ -50,7 +50,7 @@ void gen_cumulo(Cuerpo *cuerpos){
 		cuerpos[i].vel[0] = 0;
 		cuerpos[i].vel[1] = 0;
 
-		cuerpos[i].masa = 1;
+		cuerpos[i].masa = 1 + i%10;
 
 		srand(time(NULL)*i);
 		cuerpos[i].x =  WIDTH_PLANO/2 + rand()%200;
@@ -63,11 +63,24 @@ void gen_cumulo(Cuerpo *cuerpos){
 		cuerpos[i].vel[0] = 0;
 		cuerpos[i].vel[1] = 0;
 
-		cuerpos[i].masa = 1;
+		cuerpos[i].masa = 1 + i%5 ;
 
 		srand(time(NULL)*i);
-		cuerpos[i].x =  WIDTH_PLANO/2 + rand()%200 - 200;
-		cuerpos[i].y = HEIGHT_PLANO/2 + rand()%200 - 200;
+		cuerpos[i].x =  WIDTH_PLANO/2 + rand()%200 - 300;
+		cuerpos[i].y = HEIGHT_PLANO/2 + rand()%200 - 300;
+
+		i++;
+		cuerpos[i].fuerza[0] = 0;
+		cuerpos[i].fuerza[1] = 0;
+
+		cuerpos[i].vel[0] = 0;
+		cuerpos[i].vel[1] = 0;
+
+		cuerpos[i].masa = 1 + i%5 ;
+
+		srand(time(NULL)*i);
+		cuerpos[i].x =  WIDTH_PLANO/2 + rand()%200 + 300;
+		cuerpos[i].y = HEIGHT_PLANO/2 + rand()%200 + 300;
 	}
 }
 
@@ -77,7 +90,7 @@ void itera(Cuerpo *cuerpos){
 
 	for (i = 0; i < ELEMENTOS - 1; ++i) {
 		for (j = i; j < ELEMENTOS; ++j) {
-			k = Fuerza(cuerpos[i], cuerpos[j]);
+			k = Fuerza(&cuerpos[i], &cuerpos[j]);
 			
 			r = k * (cuerpos[i].x - cuerpos[j].x);
 			cuerpos[i].fuerza[0] -= r;
@@ -101,6 +114,9 @@ void itera(Cuerpo *cuerpos){
 
 		cuerpos[i].fuerza[0] = 0;
 		cuerpos[i].fuerza[1] = 0;
+
+		// cuerpos[i].vel[0] = 0;
+		// cuerpos[i].vel[1] = 0;
 
 
 	}
@@ -127,7 +143,7 @@ void display(){
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		glBegin(GL_POINTS);
-		glColor3f(1.0, 1.0, 1.0);
+		glColor3f(1.0, 0.7, 1.0);
 
 		for (i = 0; i < ELEMENTOS; ++i){
 			glVertex2i(cuerpos[i].x , cuerpos[i].y);
