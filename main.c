@@ -6,9 +6,9 @@
 #include <stdio.h>
 #include <math.h>
 
-#define ELEMENTOS		500
-#define WIDTH_PLANO		1500
-#define HEIGHT_PLANO 	1500
+#define ELEMENTOS		2000
+#define WIDTH_PLANO		2500
+#define HEIGHT_PLANO 	2500
 
 typedef struct 
 {
@@ -84,6 +84,20 @@ void gen_cumulo(Cuerpo *cuerpos){
 	}
 }
 
+void DrawCircle(float h, float k, float r, int num_segments) 
+{
+	float x, y;
+	int i;
+
+	glBegin(GL_TRIANGLE_FAN);
+	for (i = 0; i < num_segments; i++){
+		x = r * cos(i) + h;
+		y = r * sin(i) + k;
+		glVertex2f(x, y);
+	}
+	glEnd(); 
+}
+
 void itera(Cuerpo *cuerpos){
 	int i, j;
 	float k, r;
@@ -146,6 +160,7 @@ void display(){
 		glColor3f(1.0, 0.7, 1.0);
 
 		for (i = 0; i < ELEMENTOS; ++i){
+			// DrawCircle(cuerpos[i].x, cuerpos[i].y, (int)cuerpos[i].masa, 200);
 			glVertex2i(cuerpos[i].x , cuerpos[i].y);
 		}
 
